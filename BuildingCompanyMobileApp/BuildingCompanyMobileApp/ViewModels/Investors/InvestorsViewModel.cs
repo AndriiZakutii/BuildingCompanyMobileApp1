@@ -7,6 +7,8 @@ using Refit;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -20,6 +22,7 @@ namespace BuildingCompanyMobileApp.ViewModels.Investors
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Investor> ItemTapped { get; }
+        public Command SaveFileCommand { get; }
 
         public InvestorsViewModel()
         {
@@ -28,6 +31,26 @@ namespace BuildingCompanyMobileApp.ViewModels.Investors
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
             ItemTapped = new Command<Investor>(OnItemSelected);
             AddItemCommand = new Command(OnAddItem);
+
+            SaveFileCommand = new Command(() =>
+            {
+                try
+                {
+                    string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    string fileName = "investors.txt";
+
+                    StringBuilder dataBuilder = new StringBuilder();
+
+                    foreach (var item in Items)
+                        dataBuilder.Append($"{item}\n");
+
+                    File.WriteAllText(Path.Combine(folderPath, fileName), dataBuilder.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            });
         }
 
         async Task ExecuteLoadItemsCommand()

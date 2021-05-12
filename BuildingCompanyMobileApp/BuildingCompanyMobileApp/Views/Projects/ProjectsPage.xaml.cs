@@ -13,7 +13,6 @@ namespace BuildingCompanyMobileApp.Views.Projects
         public ProjectsPage()
         {
             InitializeComponent();
-
             BindingContext = _viewModel = new ProjectsViewModel();
         }
 
